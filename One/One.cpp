@@ -56,8 +56,33 @@ void getPrime(int n) {
 
 
 
+int ggT(int a, int b) {
+    int clone;
+    if (a < b) {
+        clone = b;
+        b = a;
+        a = clone;
+    }
+
+    int h;
+    while (b != 0) {
+        h = a % b;
+        a = b;
+        b = h;
+        std::cout << "TEST" << std::endl;
+    }
+
+    return a;
+
+
+}
+
+
 int main()
 {
+
+    std::cout << ggT(25, 15);
+
    //int n = 3;
    //int a = 16;
    //std::cout << calcWurzel(n, a);
