@@ -13,7 +13,13 @@ void printMatrix(float** matrix, int size) {
     {
         for (int y = 0; y < size; y++)
         {
-            std::cout << matrix[y][i] << " ";
+			if (matrix[y][i] < 0) {
+				std::cout  << matrix[y][i] << " ";
+			}
+			else {
+				std::cout << " " << matrix[y][i] << " ";
+			}
+       
         }
         std::cout << std::endl;
     }
@@ -29,6 +35,15 @@ void prinVector(float* vector, int size) {
         std::cout << std::endl;
 }
 
+
+void prinVector(int* vector, int size) {
+	std::cout << std::endl;
+	for (int y = 0; y < size; y++)
+	{
+		std::cout << vector[y] << std::endl;
+	}
+	std::cout << std::endl;
+}
 
 
 //Gibt L als Rückgabewert und R wird in A gespeichert
@@ -80,7 +95,7 @@ float** getLRMatrix(float** A, int size) {
 */
         }
     }
-//    printMatrix(L, 3);
+//    printMatrix(L, size);
 
     return L;
 }
@@ -141,22 +156,17 @@ float* solveMain(float** A, float* B, int size) {
     return X;
 }
 
-int* Zeilenpivotisierung(float** A, float* B,int size) {
-
-    static int* resultOrder = new int[size];
-    for (int i = 0; i < size; i++)
-    {
-        resultOrder[i] = i;
-    }
+void ZeilenPivotisierung(float** A, float* B,int size) {
 
     for (int x = 0; x < size; x++)
     {
-        float maxValue = 0;
-        int maxIndex = x;
+        float maxValue;
+        int maxIndex;
         for (int y = x; y < size; y++)
         {
             if (y == x) {
                 maxValue = A[x][y];
+				maxIndex = y;
             }
 
             if (maxValue < A[x][y]) {
@@ -165,42 +175,77 @@ int* Zeilenpivotisierung(float** A, float* B,int size) {
             }
         }
 
-
-        for (int i = x; i < size; i++)
+        for (int i = 0; i < size; i++)
         {
           
             float copy = A[i][maxIndex];
-            A[i][maxIndex] = A[i][i];
-            A[i][i] = copy;
+            A[i][maxIndex] = A[i][x];
+            A[i][x] = copy;
         
-            float copyB = B[maxIndex];
-            B[maxIndex] = B[i];
-            B[i] = copyB;
-
-            float copyResultOrder = resultOrder[maxIndex];
-            resultOrder[maxIndex] = resultOrder[i];
-            resultOrder[i] = copyResultOrder;  
         }
-    }
 
-    return resultOrder;
+		float copyB = B[maxIndex];
+		B[maxIndex] = B[x];
+		B[x] = copyB;
+    }
 }
 
-int* Pivotisierung(float** A, float* B,int size) {
-    int* resultOrder = Zeilenpivotisierung(A, B, size);
+int* SpaltenPivotisierung(float** A,int size) {
+	static int* resultOrder = new int[size];
+	for (int i = 0; i < size; i++)
+	{
+		resultOrder[i] = i;
+	}
+
+	for (int y = 0; y < size; y++)
+	{
+		float maxValue;
+		int maxIndex;
+		for (int x = y; x < size; x++)
+		{
+			if (x == y) {
+				maxValue = A[x][y];
+				maxIndex = x;
+			}
+
+			if (maxValue < A[x][y]) {
+				maxValue = A[x][y];
+				maxIndex = x;
+			}
+		}
+
+		for (int i = 0; i < size; i++)
+		{
+			float copy = A[maxIndex][i];
+			A[maxIndex][i] = A[y][i];
+			A[y][i] = copy;
+
+		}
+
+		int copyResultOrder = resultOrder[maxIndex];
+		resultOrder[maxIndex] = resultOrder[y];
+		resultOrder[y] = copyResultOrder;
+	
+	}
+
+	return resultOrder;
+}
+
+int* TotalPivotisierung(float** A, float* B,int size) {
+    
+	ZeilenPivotisierung(A, B, size);
+	int* resultOrder = SpaltenPivotisierung(A, size);
+
     return resultOrder;
 }
 
 float* UndoPivotisierung(float* X, int* resultOrder, int size) {
-    
-
-    prinVector(X, 3);
-
     static float* result = new float[size];
-    for (int i = 0; i < size; i++)
+	for (int i = 0; i < size; i++)
     {   
-        result[i] = X[resultOrder[i]];
+        result[resultOrder[i]] = X[i];
     }
+
     return result;
 }
 
@@ -228,12 +273,14 @@ int main()
     B[1] = 3;
     B[2] = 5;
     */
-    int size = 4;
+   
+
+	int size = 4;
     float** A = new float* [size];
     for (int i = 0; i < size; ++i) {
         A[i] = new float[size];
     }
-
+	
     A[0][0] = -1;
     A[1][0] = 1;
     A[2][0] = -1;
@@ -259,16 +306,42 @@ int main()
     B[1] = 2;
     B[2] = 3;
     B[3] = 4;
+	
+	/*
+	A[0][0] = 1;
+	A[1][0] = 9;
+	A[2][0] = 2;
+	A[3][0] = 8;
 
-    int* resultOrder = Pivotisierung(A, B, size);
- 
+	A[0][1] = 2;
+	A[1][1] = 1;
+	A[2][1] = 3;
+	A[3][1] = 4;
+
+	A[0][2] = 2;
+	A[1][2] = 3;
+	A[2][2] = 1;
+	A[3][2] = 3;
+
+	A[0][3] = 4;
+	A[1][3] = 7;
+	A[2][3] = 8;
+	A[3][3] = 6;
+
+
+	float* B = new float[size];
+	B[0] = 1;
+	B[1] = 2;
+	B[2] = 3;
+	B[3] = 4;
+	*/
+
+    int* resultOrder = TotalPivotisierung(A, B, size);
+
     float* result = solveMain(A, B, size);
-   
 
-    prinVector(result, size);
+    float* finalResult =  UndoPivotisierung(result, resultOrder, size);
 
-    //float* finalResult =  UndoPivotisierung(result, resultOrder, size);
-
-    //prinVector(finalResult, size);
+    prinVector(finalResult, size);
 
 }
