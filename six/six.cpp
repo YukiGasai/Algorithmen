@@ -95,7 +95,7 @@ float** getLRMatrix(float** A, int size) {
 */
         }
     }
-//    printMatrix(L, size);
+    //printMatrix(L, size);
 
     return L;
 }
