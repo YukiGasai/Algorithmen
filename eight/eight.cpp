@@ -4,7 +4,7 @@
 #include <iostream>
 
 float f(float x, float y) {
-    return x * x + y * y;
+    return 4 * x * x + y * y;
 }
 
 double ableitung1(float x, float y, int j) {
@@ -56,7 +56,7 @@ float* Gradientenverfahren(float s)
 int main()
 {
  
-    Gradientenverfahren(0.3);
+    Gradientenverfahren(0.1);
 
 
 
